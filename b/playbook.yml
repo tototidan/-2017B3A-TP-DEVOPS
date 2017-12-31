@@ -1,0 +1,51 @@
+- hosts: mongo_slave
+  ignore_errors: yes
+  remote_user: ubuntu
+  sudo: yes
+  roles:
+   - greendayonfire.mongodb
+  vars:
+   mongodb_net_bindip: 0.0.0.0
+   mongodb_login_host: 34.216.71.226
+   mongodb_security_authorization: "enabled"
+   mongodb_users:
+      - {
+        name: user,
+        password: password,
+        roles: readWrite,
+        database: test
+        }
+- hosts: mongo_master
+  remote_user: ubuntu
+  ignore_errors: yes
+  sudo: yes
+  roles:
+   - greendayonfire.mongodb
+  vars:
+    mongodb_security_authorization: "enabled"
+    mongodb_net_bindip: 0.0.0.0
+    mongodb_login_host: 34.216.71.226
+    mongodb_users:
+     - {
+       name: user,
+       password: password,
+       roles: dbAdminAnyDatabase,
+       database: test
+       }
+    mongodb_replication_params:
+     - host_name: "34.216.73.104:27017"
+     - host_type: "replica"
+    mongodb_user_admin_name: admin
+    mongodb_user_admin_password: password
+- hosts: ['docker_engine', 'docker_swarm_manager', 'docker_swarm_worker',]
+  remote_user: ubuntu
+  sudo: yes
+  tasks:
+   - command: docker swarm leave --force
+- name: Setup Docker Swarm
+  hosts: ['docker_engine', 'docker_swarm_manager', 'docker_swarm_worker',]
+  remote_user: ubuntu
+  ignore_errors: true
+  become: true
+  roles:
+   - atosatto.docker-swarm

@@ -1,0 +1,28 @@
+version: "2.1"
+services:
+ mongo:
+  image: mongo:latest
+  ports:
+   - '27017:27017'
+
+ api:
+  image: homecolis-api:latest
+  ports:
+   - "8080:8080"
+  links:
+   - mongo
+  environment:
+   - MONGO_USER=someadmin
+   - MONGO_DATABASE=admin
+   - MONGO_PASSWORD=secret
+   - MONGO_HOST=127.0.0.1:27017
+~
+~
+~
+~
+~
+~
+~
+~
+~
+~

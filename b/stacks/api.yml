@@ -1,0 +1,45 @@
+version: "3"
+services:
+ api_prod:
+  image: 172.31.18.6:5000/homecolis-api
+  deploy:
+   replicas: 3
+  # placement:
+   # constraints: [node.env == production]
+  environment:
+   - SERVICE_PORTS="80"
+   - MONGO_USER=user
+   - MONGO_DATABASE=test
+   - MONGO_PASSWORD=password
+   - MONGO_HOST=34.216.71.226
+   - NODE_ENV=production
+   - VIRTUAL_HOST=api.homecolis.ab
+  networks:
+   - api
+  ports:
+   - "8081:8080"
+  volumes:
+   - /var/run/docker.sock:/var/run/docker.sock
+ api_dev:
+  image:  172.31.18.6:5000/homecolis-api
+  deploy:
+   replicas: 2
+  # placement:
+   # constraints: [node.env == development]
+  environment:
+   - VIRTUAL_HOST=dev.api.homecolis.ab
+   - MONGO_USER=user
+   - MONGO_DATABASE=test
+   - MONGO_PASSWORD=password
+   - MONGO_HOST=34.216.71.226
+   - NODE_ENV=production
+   - SERVICE_PORTS="80"
+  networks:
+   - api
+  ports:
+   - "8080:8080"
+  volumes:
+   - /var/run/docker.sock:/var/run/docker.sock
+networks:
+ api:
+  external: true
